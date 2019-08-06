@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间，和接口关联-->
+<mapper namespace="net.wanho.mapper.RoleMapper">
+
+    <!--insert-->
+    <insert id="insertRole" useGeneratedKeys="true" keyProperty="rid">
+        insert into role VALUES (null,#{roleName},#{status})
+    </insert>
+    <insert id="insertRolePower" >
+        insert into role_power VALUES
+        <foreach collection="pids" index="index" item="item" separator=",">
+            (null,#{rid},#{item},1)
+        </foreach>
+    </insert>
+
+    <!--update-->
+    <update id="updateRole" useGeneratedKeys="true" keyProperty="rid">
+        update role SET roleName=#{roleName},status=#{status} where rid = #{rid}
+    </update>
+
+    <!--delete-->
+    <delete id="deleteRole">
+        update role set status = 1 where rid=#{rid}
+    </delete>
+    <delete id="deleteRolePower">
+        delete from role_power where rid=#{rid}
+    </delete>
+
+</mapper>

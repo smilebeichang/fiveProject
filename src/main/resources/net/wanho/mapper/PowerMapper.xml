@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间，和接口关联-->
+<mapper namespace="net.wanho.mapper.PowerMapper">
+
+
+    <select id="selectPowerList" resultType="net.wanho.pojo.Power">
+          select * from power
+    </select>
+
+    <resultMap id="menuInfoMap" type="net.wanho.vo.PowerInfoDto" >
+        <id column="gid" property="id"></id>
+        <result column="gname" property="name"></result>
+        <result column="gpath" property="url"></result>
+        <result column="gpid" property="pid"></result>
+        <result column="checked" property="checked" ></result>
+        <collection property="children" ofType="net.wanho.vo.PowerInfoDto">
+            <id column="fid" property="id"></id>
+            <result column="fname" property="name"></result>
+            <result column="fpath" property="url"></result>
+            <result column="fpid" property="pid"></result>
+            <result column="checked" property="checked" ></result>
+            <collection property="children" ofType="net.wanho.vo.PowerInfoDto">
+                <id column="menuId" property="id"></id>
+                <result column="menuName" property="name"></result>
+                <result column="menuPath" property="url"></result>
+                <result column="parentId" property="pid"></result>
+                <result column="checked1" property="checked" ></result>
+            </collection>
+        </collection>
+    </resultMap>
+    <select id="getPowerInfos" resultMap="menuInfoMap" parameterType="int">
+
+    SELECT tbl.*,rp.status checked,NULLIF(tbl.pid and rp.status,null) checked1 from role_power rp
+        right JOIN(SELECT * from (SELECT m1.pid gid,m1.pname gname,m1.parentId gpid,m1.url gpath, m2.pid fid,m2.pname fname,m2.parentId fpid,m2.url fpath
+        from power m1,power m2 where m1.parentId=0 and m2.parentId=m1.pid)
+        tal LEFT  JOIN power m3 on tal.fid=m3.parentId) as tbl on (rp.pid=tbl.pid and rp.rid=#{rid})  or (rp.pid=tbl.fid and tbl.pid is null and rp.rid=#{rid})
+
+    </select>
+
+
+
+</mapper>

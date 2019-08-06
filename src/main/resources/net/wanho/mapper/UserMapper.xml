@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间，和接口关联-->
+<mapper namespace="net.wanho.mapper.UserMapper">
+    <update id="updateUser">
+        update user SET userName = #{userName},password = #{password} where uid = #{uid}
+    </update>
+
+    <update id="updateRole">
+        update user_role ur LEFT JOIN `user` u on u.uid = ur.uid set ur.rid=2 where u.uid=#{uid}
+
+    </update>
+
+
+    <select id="queryAllUser" resultType="User">
+        SELECT * from user
+    </select>
+    <select id="queryById" resultType="User" >
+        SELECT * from user where uid=${uid}
+    </select>
+    <select id="getUserByName" resultType="net.wanho.pojo.User">
+        SELECT  userName,password,status,salt FROM user WHERE userName=#{userName} and status != 1
+    </select>
+    <select id="queryRole" resultType="Role">
+        SELECT r.* from role r INNER JOIN user_role ur on r.rid = ur.rid INNER JOIN user u on u.uid = ur.uid where u.uid=#{uid}
+    </select>
+
+    <insert id="insertUser">
+        insert into user VALUES (null,#{userName},#{password},#{status},#{salt})
+    </insert>
+    <insert id="insertUserRoleBatch">
+        insert into user_role VALUES
+            <foreach collection="rids" index="index" item="item" separator=",">
+                (null,#{item},#{uid})
+            </foreach>
+    </insert>
+
+    <delete id="delete">
+        update user u set status = 1 where u.uid=#{uid}
+    </delete>
+    <!--外键约束-->
+    <delete id="deleteUserRole">
+        delete  from user_role  where uid=#{uid}
+    </delete>
+    <delete id="deleteUser">
+        delete from user where userName = #{userName}
+    </delete>
+
+    <select id="queryAllRole" resultType="Role">
+        select * from role
+    </select>
+    <select id="queryRoleById" resultType="net.wanho.pojo.Role">
+        select * from role where rid=#{rid}
+    </select>
+    <select id="queryAllPower" resultType="net.wanho.pojo.Power">
+        select * from power
+    </select>
+    <select id="queryAllPowerByRid" resultType="net.wanho.pojo.Power">
+        SELECT p.* from power p INNER JOIN role_power rp on p.pid = rp.pid INNER JOIN role r on r.rid = rp.rid where r.rid=#{rid}
+    </select>
+    <select id="queryAllPowerByUid" resultType="net.wanho.pojo.Power">
+        SELECT p.* from power p INNER JOIN role_power rp on p.pid = rp.pid INNER JOIN role r on r.rid = rp.rid INNER JOIN user u where u.rid=#{uid}
+    </select>
+
+</mapper>

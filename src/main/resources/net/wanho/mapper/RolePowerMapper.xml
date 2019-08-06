@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间，和接口关联-->
+<mapper namespace="net.wanho.mapper.RolePowerMapper">
+
+
+    <select id="selectRolePowerList" resultType="net.wanho.pojo.RolePower">
+        /*可能需要判断*/
+        select  rid , pid  from role_power where 1=1 AND rid = #{rid}
+    </select>
+</mapper>
